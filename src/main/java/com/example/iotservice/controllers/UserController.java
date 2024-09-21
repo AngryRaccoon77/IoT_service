@@ -1,7 +1,9 @@
 package com.example.iotservice.controllers;
 
 import com.example.iotservice.dtos.AddUserDTO;
+import com.example.iotservice.dtos.HouseDTO;
 import com.example.iotservice.dtos.UserDTO;
+import com.example.iotservice.services.HouseService;
 import com.example.iotservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
@@ -21,18 +23,30 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
     private final UserService userService;
+    private final HouseService houseService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, HouseService houseService) {
         this.userService = userService;
+        this.houseService = houseService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<UserDTO>> getUserById(@PathVariable UUID id) {
         UserDTO userDTO = userService.getUserById(id);
         EntityModel<UserDTO> resource = EntityModel.of(userDTO);
+
+        // Ссылка на самого пользователя
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(UserController.class).getUserById(id)).withSelfRel();
         resource.add(selfLink);
+
+        // Добавляем ссылки на дома пользователя
+        List<HouseDTO> houses = houseService.getHousesByUserId(id);
+        for (HouseDTO house : houses) {
+            Link houseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(house.getId())).withRel("house");
+            resource.add(houseLink);
+        }
+
         return ResponseEntity.ok(resource);
     }
 

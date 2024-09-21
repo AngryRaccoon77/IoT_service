@@ -1,10 +1,18 @@
 package com.example.iotservice.dtos;
 
+import com.example.iotservice.models.Hub;
+import com.example.iotservice.models.User;
+
+import java.util.Set;
 import java.util.UUID;
 
 public class AddHouseDTO {
     private String address;
-    private int numberOfRooms;
+
+    private User user;
+
+    private Set<Hub> hubs;
+
 
     // Getters and Setters
 
@@ -16,11 +24,20 @@ public class AddHouseDTO {
         this.address = address;
     }
 
-    public int getNumberOfRooms() {
-        return numberOfRooms;
+    public User getUser() {
+        return user;
     }
 
-    public void setNumberOfRooms(int numberOfRooms) {
-        this.numberOfRooms = numberOfRooms;
+    public void setUser(User user) {
+        this.user = user;
     }
+
+    public Set<Hub> getHubs() {
+        return hubs;
+    }
+
+    public void setHubs(Set<Hub> hubs) {
+        this.hubs = hubs;
+    }
+
 }

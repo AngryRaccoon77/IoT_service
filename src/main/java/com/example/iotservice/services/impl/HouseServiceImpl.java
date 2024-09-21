@@ -3,6 +3,7 @@ package com.example.iotservice.services.impl;
 import com.example.iotservice.dtos.AddHouseDTO;
 import com.example.iotservice.dtos.HouseDTO;
 import com.example.iotservice.models.House;
+import com.example.iotservice.models.User;
 import com.example.iotservice.repositories.HouseRepository;
 import com.example.iotservice.services.HouseService;
 import org.modelmapper.ModelMapper;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -62,4 +64,14 @@ public class HouseServiceImpl implements HouseService {
     public void deleteHouse(UUID id) {
         houseRepository.deleteById(id);
     }
+
+    @Override
+    public List<HouseDTO> getHousesByUserId(UUID userId) {
+        return houseRepository.findByUserId(userId)  // Вызываем репозиторий для получения домов
+                .stream()
+                .map(house -> modelMapper.map(house, HouseDTO.class))  // Маппим сущности в DTO
+                .collect(Collectors.toList());
+    }
+
+
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
 
     private UserRepository userRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -31,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private ModelMapper modelMapper;
+
 
     @Override
     public UserDTO getUserById(UUID id) {
@@ -61,8 +63,19 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userRepository.save(user), UserDTO.class);
     }
 
+
+
     @Override
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        Optional<User> userOptional = Optional.of(userRepository.findByEmail(email));
+        User user = userOptional.orElseThrow(() -> new RuntimeException("User not found"));
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+
 }
