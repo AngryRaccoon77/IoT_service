@@ -1,6 +1,7 @@
 package com.example.iotservice.services.impl;
 
 import com.example.iotservice.dtos.AddHubDTO;
+import com.example.iotservice.dtos.HouseDTO;
 import com.example.iotservice.dtos.HubDTO;
 import com.example.iotservice.dtos.DeviceDTO;
 import com.example.iotservice.models.Hub;
@@ -20,13 +21,13 @@ import java.util.stream.Collectors;
 @Service
 public class HubServiceImpl implements HubService {
 
-    private HubRepository controllerRepository;
+    private HubRepository hubRepository;
     private DeviceRepository deviceRepository;
     private ModelMapper modelMapper;
 
     @Autowired
-    public void setControllerRepository(HubRepository controllerRepository) {
-        this.controllerRepository = controllerRepository;
+    public void setControllerRepository(HubRepository hubRepository) {
+        this.hubRepository = hubRepository;
     }
 
     @Autowired
@@ -41,42 +42,50 @@ public class HubServiceImpl implements HubService {
 
     @Override
     public HubDTO getHubById(UUID id) {
-        Hub controller = controllerRepository.findById(id).orElseThrow(() -> new RuntimeException("Controller not found"));
+        Hub controller = hubRepository.findById(id).orElseThrow(() -> new RuntimeException("Controller not found"));
         return modelMapper.map(controller, HubDTO.class);
     }
 
     @Override
     public List<HubDTO> getAllHubs() {
-        return controllerRepository.findAll().stream()
+        return hubRepository.findAll().stream()
                 .map(controller -> modelMapper.map(controller, HubDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public HubDTO createHub(AddHubDTO controllerDTO) {
-        Hub controller = modelMapper.map(controllerDTO, Hub.class);
-        controller.setModified(new Date());
-        return modelMapper.map(controllerRepository.save(controller), HubDTO.class);
+    public HubDTO createHub(AddHubDTO hubDTO) {
+        Hub hub = modelMapper.map(hubDTO, Hub.class);
+        hub.setCreated(new Date());
+        return modelMapper.map(hubRepository.save(hub), HubDTO.class);
     }
 
     @Override
-    public HubDTO updateHub(UUID id, HubDTO controllerDTO) {
-        Hub controller = controllerRepository.findById(id).orElseThrow(() -> new RuntimeException("Controller not found"));
-        modelMapper.map(controllerDTO, controller);
+    public HubDTO updateHub(UUID id, HubDTO hubDTO) {
+        Hub controller = hubRepository.findById(id).orElseThrow(() -> new RuntimeException("Controller not found"));
+        modelMapper.map(hubDTO, controller);
         controller.setModified(new Date());
-        return modelMapper.map(controllerRepository.save(controller), HubDTO.class);
+        return modelMapper.map(hubRepository.save(controller), HubDTO.class);
     }
 
     @Override
     public void deleteHub(UUID id) {
-        controllerRepository.deleteById(id);
+        hubRepository.deleteById(id);
     }
 
     @Override
-    public List<DeviceDTO> getDevicesByHubId(UUID controllerId) {
-        List<Device> devices = deviceRepository.findByControllerId(controllerId);
+    public List<DeviceDTO> getDevicesByHubId(UUID hubId) {
+        List<Device> devices = deviceRepository.findByControllerId(hubId);
         return devices.stream()
                 .map(device -> modelMapper.map(device, DeviceDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<HubDTO> getHubsByHouseId(UUID houseId) {
+        return hubRepository.findByHouseId(houseId)
+                .stream()
+                .map(house -> modelMapper.map(house, HubDTO.class))
                 .collect(Collectors.toList());
     }
 }

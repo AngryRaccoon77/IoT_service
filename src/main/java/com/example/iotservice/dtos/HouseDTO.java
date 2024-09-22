@@ -2,6 +2,8 @@ package com.example.iotservice.dtos;
 
 import com.example.iotservice.models.Hub;
 import com.example.iotservice.models.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.Set;
 import java.util.UUID;
@@ -9,10 +11,8 @@ import java.util.UUID;
 public class HouseDTO {
     private UUID id;
     private String address;
-
-    private User user;
-
-    private Set<Hub> hubs;
+    @JsonBackReference
+    private UserDTO user;
 
     // Getters and Setters
     public UUID getId() {
@@ -32,19 +32,12 @@ public class HouseDTO {
     }
 
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
 
-    public Set<Hub> getHubs() {
-        return hubs;
-    }
-
-    public void setHubs(Set<Hub> hubs) {
-        this.hubs = hubs;
-    }
 }

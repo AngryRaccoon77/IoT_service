@@ -2,7 +2,9 @@ package com.example.iotservice.controllers;
 
 import com.example.iotservice.dtos.AddHouseDTO;
 import com.example.iotservice.dtos.HouseDTO;
+import com.example.iotservice.dtos.HubDTO;
 import com.example.iotservice.services.HouseService;
+import com.example.iotservice.services.HubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -21,10 +23,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class HouseController {
 
     private final HouseService houseService;
+    private final HubService hubService;
+
 
     @Autowired
-    public HouseController(HouseService houseService) {
+    public HouseController(HouseService houseService, HubService hubService) {
         this.houseService = houseService;
+        this.hubService = hubService;
     }
 
     @GetMapping("/{id}")
@@ -33,6 +38,15 @@ public class HouseController {
         EntityModel<HouseDTO> resource = EntityModel.of(houseDTO);
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(id)).withSelfRel();
         resource.add(selfLink);
+
+        Link userLink = WebMvcLinkBuilder.linkTo(methodOn(UserController.class).getUserById(houseDTO.getUser().getId())).withRel("user");
+        resource.add(userLink);
+
+        List<HubDTO> hubs = hubService.getHubsByHouseId(id);
+        for(HubDTO hub : hubs) {
+            Link hubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(hub.getId())).withRel("hub");
+            resource.add(hubLink);
+        }
         return ResponseEntity.ok(resource);
     }
 

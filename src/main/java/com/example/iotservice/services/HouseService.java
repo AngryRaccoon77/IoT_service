@@ -15,4 +15,5 @@ public interface HouseService {
     HouseDTO updateHouse(UUID id, HouseDTO houseDTO);
     void deleteHouse(UUID id);
     List<HouseDTO> getHousesByUserId(UUID userId);
+    HouseDTO getHouseByAddress(String address);
 }

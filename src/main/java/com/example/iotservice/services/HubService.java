@@ -14,5 +14,6 @@ public interface HubService {
     HubDTO updateHub(UUID id, HubDTO HubDTO);
     void deleteHub(UUID id);
     List<DeviceDTO> getDevicesByHubId(UUID HubId);
+    List<HubDTO> getHubsByHouseId(UUID houseId);
 
 }

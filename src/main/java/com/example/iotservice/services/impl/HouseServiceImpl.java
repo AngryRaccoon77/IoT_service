@@ -73,5 +73,10 @@ public class HouseServiceImpl implements HouseService {
                 .collect(Collectors.toList());
     }
 
-
+    @Override
+    public HouseDTO getHouseByAddress(String address) {
+        Optional<House> houseOptional = Optional.of(houseRepository.findByAddress(address));
+        House house = houseOptional.orElseThrow(() -> new RuntimeException("House not found"));
+        return modelMapper.map(house, HouseDTO.class);
+    }
 }

@@ -13,5 +13,5 @@ import java.util.UUID;
 public interface HouseRepository extends JpaRepository<House, UUID> {
     House findByName(String name);
     List<House> findByUserId(UUID userId);
-
+    House findByAddress(String address);
 }
