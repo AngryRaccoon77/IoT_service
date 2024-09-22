@@ -9,7 +9,7 @@ import java.util.Set;
 public class Device extends BaseEntity{
     private boolean status;
 
-    private Hub controller;
+    private Hub hub;
 
     private Set<DeviceService> services;
 
@@ -31,11 +31,11 @@ public class Device extends BaseEntity{
     @ManyToOne(optional = false)
     @JoinColumn(name = "controller_id", referencedColumnName = "id", nullable = false)
     public Hub getController(){
-        return controller;
+        return hub;
     }
 
     public void setController(Hub controller){
-        this.controller = controller;
+        this.hub = controller;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "device", cascade = CascadeType.ALL)

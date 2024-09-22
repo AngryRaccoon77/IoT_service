@@ -1,10 +1,9 @@
 package com.example.iotservice;
 
-import com.example.iotservice.dtos.AddHouseDTO;
-import com.example.iotservice.dtos.AddHubDTO;
-import com.example.iotservice.dtos.AddUserDTO;
+import com.example.iotservice.dtos.*;
 import com.example.iotservice.models.House;
 import com.example.iotservice.models.User;
+import com.example.iotservice.services.DeviceService;
 import com.example.iotservice.services.HubService;
 import com.example.iotservice.services.UserService;
 import com.example.iotservice.services.HouseService;
@@ -19,7 +18,8 @@ import org.springframework.context.annotation.Bean;
 public class IoTServiceApplication {
 
 	@Bean
-	public CommandLineRunner loadData(UserService userService, HouseService houseService, HubService hubService) {
+	public CommandLineRunner loadData(UserService userService, HouseService houseService, HubService hubService,
+									  DeviceService deviceService) {
 		return args -> {
 			AddUserDTO user1 = new AddUserDTO();
 			user1.setName("John Doe");
@@ -44,12 +44,33 @@ public class IoTServiceApplication {
 			AddHubDTO hub1 = new AddHubDTO();
 			hub1.setName("Hub 1");
 			hub1.setHouse(savedHouse1);
-			hubService.createHub(hub1);
+			HubDTO savedHub1 = hubService.createHub(hub1);
 
 			AddHubDTO hub2 = new AddHubDTO();
 			hub2.setName("Hub 2");
 			hub2.setHouse(savedHouse2);
-			hubService.createHub(hub2);
+			HubDTO savedHub2 = hubService.createHub(hub2);
+
+			AddDeviceDTO device1 = new AddDeviceDTO();
+			device1.setName("Device 1");
+			device1.setHub(savedHub1);
+			deviceService.createDevice(device1);
+
+			AddDeviceDTO device2 = new AddDeviceDTO();
+			device2.setName("Device 2");
+			device2.setHub(savedHub1);
+			deviceService.createDevice(device2);
+
+			AddDeviceDTO device3 = new AddDeviceDTO();
+			device3.setName("Device 3");
+			device3.setHub(savedHub2);
+			deviceService.createDevice(device3);
+
+			AddDeviceDTO device4 = new AddDeviceDTO();
+			device4.setName("Device 4");
+			device4.setHub(savedHub2);
+			deviceService.createDevice(device4);
+
 		};
 	}
 	@Bean

@@ -1,6 +1,7 @@
 package com.example.iotservice.controllers;
 
 import com.example.iotservice.dtos.AddHubDTO;
+import com.example.iotservice.dtos.DeviceDTO;
 import com.example.iotservice.dtos.HubDTO;
 import com.example.iotservice.services.HubService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,15 @@ public class HubController {
         EntityModel<HubDTO> resource = EntityModel.of(hubDTO);
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(id)).withSelfRel();
         resource.add(selfLink);
+
+        Link houseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(hubDTO.getHouse().getId())).withRel("house");
+        resource.add(houseLink);
+
+        List<DeviceDTO> devices = hubService.getDevicesByHubId(id);
+        for(DeviceDTO device : devices) {
+            Link deviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(device.getId())).withRel("device");
+            resource.add(deviceLink);
+        }
         return ResponseEntity.ok(resource);
     }
 

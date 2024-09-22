@@ -6,6 +6,7 @@ public class HubDTO {
     private UUID id;
     private String name;
     private String type;
+    private HouseDTO house;
 
     // Getters and Setters
     public UUID getId() {
@@ -30,5 +31,13 @@ public class HubDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public HouseDTO getHouse() {
+        return house;
+    }
+
+    public void setHouse(HouseDTO house) {
+        this.house = house;
     }
 }

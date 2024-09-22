@@ -6,6 +6,7 @@ public class AddDeviceDTO {
     private String name;
     private String type;
 
+    private HubDTO hub;
     // Getters and Setters
 
     public String getName() {
@@ -22,5 +23,13 @@ public class AddDeviceDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public HubDTO getHub() {
+        return hub;
+    }
+
+    public void setHub(HubDTO hub) {
+        this.hub = hub;
     }
 }
