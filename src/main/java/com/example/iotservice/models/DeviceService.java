@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Table(name = "services")
+@Table(name = "deviceServices")
 public class DeviceService extends BaseEntity {
     private ServiceType type;
     private String data;

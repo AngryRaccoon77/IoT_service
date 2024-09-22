@@ -7,6 +7,7 @@ public class AddDeviceServiceDTO {
     private String name;
     private String type;
 
+    private DeviceDTO device;
     // Getters and Setters
 
     public String getName() {
@@ -23,5 +24,13 @@ public class AddDeviceServiceDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public DeviceDTO getDevice() {
+        return device;
+    }
+
+    public void setDevice(DeviceDTO device) {
+        this.device = device;
     }
 }

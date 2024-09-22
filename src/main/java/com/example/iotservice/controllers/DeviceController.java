@@ -2,7 +2,9 @@ package com.example.iotservice.controllers;
 
 import com.example.iotservice.dtos.AddDeviceDTO;
 import com.example.iotservice.dtos.DeviceDTO;
+import com.example.iotservice.dtos.DeviceServiceDTO;
 import com.example.iotservice.services.DeviceService;
+import com.example.iotservice.services.DeviceServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -21,10 +23,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private final DeviceServiceService deviceServiceService;
 
     @Autowired
-    public DeviceController(DeviceService deviceService) {
+    public DeviceController(DeviceService deviceService, DeviceServiceService deviceServiceService) {
         this.deviceService = deviceService;
+        this.deviceServiceService = deviceServiceService;
     }
 
     @GetMapping("/{id}")
@@ -33,6 +37,15 @@ public class DeviceController {
         EntityModel<DeviceDTO> resource = EntityModel.of(deviceDTO);
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(id)).withSelfRel();
         resource.add(selfLink);
+
+        Link hubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(deviceDTO.getHub().getId())).withRel("hub");
+        resource.add(hubLink);
+
+        List<DeviceServiceDTO> services = deviceServiceService.getDeviceServicesByDeviceId(id);
+        for(DeviceServiceDTO service : services) {
+            Link serviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(service.getId())).withRel("service");
+            resource.add(serviceLink);
+        }
         return ResponseEntity.ok(resource);
     }
 

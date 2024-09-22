@@ -7,6 +7,7 @@ public class DeviceDTO {
     private String name;
     private String type;
 
+    private HubDTO hub;
     // Getters and Setters
     public UUID getId() {
         return id;
@@ -30,5 +31,13 @@ public class DeviceDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public HubDTO getHub() {
+        return hub;
+    }
+
+    public void setHub(HubDTO hub) {
+        this.hub = hub;
     }
 }

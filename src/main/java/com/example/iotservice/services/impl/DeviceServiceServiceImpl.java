@@ -2,6 +2,7 @@ package com.example.iotservice.services.impl;
 
 import com.example.iotservice.dtos.AddDeviceServiceDTO;
 import com.example.iotservice.dtos.DeviceServiceDTO;
+import com.example.iotservice.dtos.HubDTO;
 import com.example.iotservice.models.DeviceService;
 import com.example.iotservice.repositories.DeviceServiceRepository;
 import com.example.iotservice.services.DeviceServiceService;
@@ -61,5 +62,13 @@ public class DeviceServiceServiceImpl implements DeviceServiceService {
     @Override
     public void deleteDeviceService(UUID id) {
         serviceRepository.deleteById(id);
+    }
+
+    @Override
+    public List<DeviceServiceDTO> getDeviceServicesByDeviceId(UUID deviceId) {
+        return serviceRepository.findByDeviceId(deviceId)
+                .stream()
+                .map(device -> modelMapper.map(device, DeviceServiceDTO.class))
+                .collect(Collectors.toList());
     }
 }

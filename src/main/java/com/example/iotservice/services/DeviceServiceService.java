@@ -12,4 +12,5 @@ public interface DeviceServiceService {
     DeviceServiceDTO createDeviceService(AddDeviceServiceDTO serviceDTO);
     DeviceServiceDTO updateDeviceService(UUID id, DeviceServiceDTO serviceDTO);
     void deleteDeviceService(UUID id);
+    List<DeviceServiceDTO> getDeviceServicesByDeviceId(UUID id);
 }

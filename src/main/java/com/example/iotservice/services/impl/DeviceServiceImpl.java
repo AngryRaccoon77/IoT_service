@@ -2,6 +2,7 @@ package com.example.iotservice.services.impl;
 
 import com.example.iotservice.dtos.AddDeviceDTO;
 import com.example.iotservice.dtos.DeviceDTO;
+import com.example.iotservice.dtos.DeviceServiceDTO;
 import com.example.iotservice.models.Device;
 import com.example.iotservice.repositories.DeviceRepository;
 import com.example.iotservice.services.DeviceService;
@@ -71,4 +72,6 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return modelMapper.map(device, DeviceDTO.class);
     }
+
+
 }
