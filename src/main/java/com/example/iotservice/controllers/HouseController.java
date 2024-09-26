@@ -46,7 +46,14 @@ public class HouseController {
         for(HubDTO hub : hubs) {
             Link hubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(hub.getId())).withRel("hub");
             resource.add(hubLink);
+
+            Link updateHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).updateHouse(hub.getId(), null)).withRel("updateHouse");
+            resource.add(updateHouseLink);
         }
+
+        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).deleteHouse(id)).withRel("delete");
+        resource.add(deleteLink);
+
         return ResponseEntity.ok(resource);
     }
 
@@ -57,6 +64,10 @@ public class HouseController {
                     EntityModel<HouseDTO> resource = EntityModel.of(houseDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(houseDTO.getId())).withSelfRel();
                     resource.add(selfLink);
+
+                    Link addHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).createHouse(null)).withRel("addHouse");
+                    resource.add(addHouseLink);
+
                     return resource;
                 })
                 .collect(Collectors.toList());

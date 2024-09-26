@@ -43,6 +43,13 @@ public class HubController {
             Link deviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(device.getId())).withRel("device");
             resource.add(deviceLink);
         }
+
+        Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).updateHub(id, hubDTO)).withRel("update");
+        resource.add(updateLink);
+
+        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).deleteHub(id)).withRel("delete");
+        resource.add(deleteLink);
+
         return ResponseEntity.ok(resource);
     }
 
@@ -53,6 +60,10 @@ public class HubController {
                     EntityModel<HubDTO> resource = EntityModel.of(hubDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(hubDTO.getId())).withSelfRel();
                     resource.add(selfLink);
+
+                    Link addHubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).createHub(null)).withRel("addHub");
+                    resource.add(addHubLink);
+
                     return resource;
                 })
                 .collect(Collectors.toList());

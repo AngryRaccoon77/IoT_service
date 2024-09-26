@@ -1,11 +1,14 @@
 package com.example.iotservice.dtos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.UUID;
 
 public class HubDTO {
     private UUID id;
     private String name;
     private String type;
+    @JsonBackReference
     private HouseDTO house;
 
     // Getters and Setters

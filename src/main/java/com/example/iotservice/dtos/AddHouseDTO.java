@@ -3,10 +3,12 @@ package com.example.iotservice.dtos;
 import com.example.iotservice.models.Hub;
 import com.example.iotservice.models.User;
 
+import javax.lang.model.element.Name;
 import java.util.Set;
 import java.util.UUID;
 
 public class AddHouseDTO {
+    private String name;
     private String address;
 
     private User user;
@@ -40,4 +42,10 @@ public class AddHouseDTO {
         this.hubs = hubs;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
 }

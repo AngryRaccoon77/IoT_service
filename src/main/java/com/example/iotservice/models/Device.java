@@ -11,6 +11,8 @@ public class Device extends BaseEntity{
 
     private Hub hub;
 
+    private String room;
+
     private Set<DeviceService> services;
 
     public Device(){}
@@ -47,4 +49,12 @@ public class Device extends BaseEntity{
         this.services = services;
     }
 
+    @Column(name = "room")
+    public String getRoom(){
+        return room;
+    }
+
+    public void setRoom(String room){
+        this.room = room;
+    }
 }

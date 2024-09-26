@@ -1,11 +1,13 @@
 package com.example.iotservice.dtos;
 
+import com.example.iotservice.models.enums.ServiceType;
+
 import java.util.UUID;
 
 public class AddDeviceServiceDTO {
 
     private String name;
-    private String type;
+    private ServiceType type;
 
     private DeviceDTO device;
     // Getters and Setters
@@ -18,11 +20,11 @@ public class AddDeviceServiceDTO {
         this.name = name;
     }
 
-    public String getType() {
+    public ServiceType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ServiceType type) {
         this.type = type;
     }
 

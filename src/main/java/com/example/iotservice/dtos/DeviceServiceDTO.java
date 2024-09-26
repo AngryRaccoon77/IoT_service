@@ -1,11 +1,15 @@
 package com.example.iotservice.dtos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.UUID;
 
 public class DeviceServiceDTO {
     private UUID id;
     private String name;
     private String type;
+    @JsonBackReference
+    private DeviceDTO device;
 
     // Getters and Setters
     public UUID getId() {
@@ -30,5 +34,13 @@ public class DeviceServiceDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public DeviceDTO getDevice() {
+        return device;
+    }
+
+    public void setDevice(DeviceDTO device) {
+        this.device = device;
     }
 }

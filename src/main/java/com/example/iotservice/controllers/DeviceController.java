@@ -41,6 +41,12 @@ public class DeviceController {
         Link hubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(deviceDTO.getHub().getId())).withRel("hub");
         resource.add(hubLink);
 
+        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).deleteDevice(id)).withRel("delete");
+        resource.add(deleteLink);
+
+        Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).updateDevice(id, deviceDTO)).withRel("update");
+        resource.add(updateLink);
+
         List<DeviceServiceDTO> services = deviceServiceService.getDeviceServicesByDeviceId(id);
         for(DeviceServiceDTO service : services) {
             Link serviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(service.getId())).withRel("service");
@@ -56,6 +62,10 @@ public class DeviceController {
                     EntityModel<DeviceDTO> resource = EntityModel.of(deviceDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(deviceDTO.getId())).withSelfRel();
                     resource.add(selfLink);
+
+                    Link addDeviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).createDevice(null)).withRel("addDevice");
+                    resource.add(addDeviceLink);
+
                     return resource;
                 })
                 .collect(Collectors.toList());

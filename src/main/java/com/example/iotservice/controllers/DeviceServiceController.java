@@ -33,6 +33,15 @@ public class DeviceServiceController {
         EntityModel<DeviceServiceDTO> resource = EntityModel.of(deviceServiceDTO);
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(id)).withSelfRel();
         resource.add(selfLink);
+
+        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).deleteDeviceService(id)).withRel("delete");
+        resource.add(deleteLink);
+
+        Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).updateDeviceService(id, deviceServiceDTO)).withRel("update");
+        resource.add(updateLink);
+
+        Link deviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(deviceServiceDTO.getDevice().getId())).withRel("device");
+        resource.add(deviceLink);
         return ResponseEntity.ok(resource);
     }
 
@@ -43,6 +52,10 @@ public class DeviceServiceController {
                     EntityModel<DeviceServiceDTO> resource = EntityModel.of(deviceServiceDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(deviceServiceDTO.getId())).withSelfRel();
                     resource.add(selfLink);
+
+                    Link addDeviceServiceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).createDeviceService(null)).withRel("addDeviceService");
+                    resource.add(addDeviceServiceLink);
+
                     return resource;
                 })
                 .collect(Collectors.toList());

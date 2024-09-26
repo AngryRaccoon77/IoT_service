@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public class HouseDTO {
     private UUID id;
+    private String name;
     private String address;
     @JsonBackReference
     private UserDTO user;
@@ -38,6 +39,14 @@ public class HouseDTO {
 
     public void setUser(UserDTO user) {
         this.user = user;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

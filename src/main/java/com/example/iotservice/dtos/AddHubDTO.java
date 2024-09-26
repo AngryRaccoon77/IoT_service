@@ -1,12 +1,14 @@
 package com.example.iotservice.dtos;
 
 import com.example.iotservice.models.House;
+import com.example.iotservice.models.enums.ControllerType;
 
 import java.util.UUID;
 
 public class AddHubDTO {
     private String name;
-    private String type;
+    private ControllerType type;
+    private String status;
 
     private House house;
 
@@ -20,11 +22,11 @@ public class AddHubDTO {
         this.name = name;
     }
 
-    public String getType() {
+    public ControllerType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ControllerType type) {
         this.type = type;
     }
 
@@ -34,5 +36,8 @@ public class AddHubDTO {
 
     public void setHouse(House house) {
         this.house = house;
+    }
+
+    public void setStatus(String online) {
     }
 }
