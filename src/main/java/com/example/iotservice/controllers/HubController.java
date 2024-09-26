@@ -2,9 +2,11 @@ package com.example.iotservice.controllers;
 
 import com.example.iotservice.dtos.AddHubDTO;
 import com.example.iotservice.dtos.DeviceDTO;
+import com.example.iotservice.dtos.HouseDTO;
 import com.example.iotservice.dtos.HubDTO;
 import com.example.iotservice.services.HubService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -38,6 +40,9 @@ public class HubController {
         Link houseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(hubDTO.getHouse().getId())).withRel("house");
         resource.add(houseLink);
 
+        Link addDeviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).createDevice(null)).withRel("addDevice");
+        resource.add(addDeviceLink);
+
         List<DeviceDTO> devices = hubService.getDevicesByHubId(id);
         for(DeviceDTO device : devices) {
             Link deviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(device.getId())).withRel("device");
@@ -54,20 +59,19 @@ public class HubController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EntityModel<HubDTO>>> getAllHubs() {
+    public ResponseEntity<CollectionModel<EntityModel<HubDTO>>> getAllHubs() {
         List<EntityModel<HubDTO>> hubs = hubService.getAllHubs().stream()
                 .map(hubDTO -> {
                     EntityModel<HubDTO> resource = EntityModel.of(hubDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(hubDTO.getId())).withSelfRel();
                     resource.add(selfLink);
-
-                    Link addHubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).createHub(null)).withRel("addHub");
-                    resource.add(addHubLink);
-
                     return resource;
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(hubs);
+
+        Link addHubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).createHub(null)).withRel("addHub");
+        CollectionModel<EntityModel<HubDTO>> collectionModel = CollectionModel.of(hubs, addHubLink);
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PostMapping

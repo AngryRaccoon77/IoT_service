@@ -6,6 +6,7 @@ import com.example.iotservice.dtos.DeviceServiceDTO;
 import com.example.iotservice.services.DeviceService;
 import com.example.iotservice.services.DeviceServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -47,29 +48,33 @@ public class DeviceController {
         Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).updateDevice(id, deviceDTO)).withRel("update");
         resource.add(updateLink);
 
+        Link addDeviceServiceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).createDeviceService(null)).withRel("addDeviceService");
+        resource.add(addDeviceServiceLink);
+
         List<DeviceServiceDTO> services = deviceServiceService.getDeviceServicesByDeviceId(id);
         for(DeviceServiceDTO service : services) {
             Link serviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(service.getId())).withRel("service");
             resource.add(serviceLink);
         }
+
+
         return ResponseEntity.ok(resource);
     }
 
     @GetMapping
-    public ResponseEntity<List<EntityModel<DeviceDTO>>> getAllDevices() {
+    public ResponseEntity<CollectionModel<EntityModel<DeviceDTO>>> getAllDevices() {
         List<EntityModel<DeviceDTO>> devices = deviceService.getAllDevices().stream()
                 .map(deviceDTO -> {
                     EntityModel<DeviceDTO> resource = EntityModel.of(deviceDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(deviceDTO.getId())).withSelfRel();
                     resource.add(selfLink);
-
-                    Link addDeviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).createDevice(null)).withRel("addDevice");
-                    resource.add(addDeviceLink);
-
                     return resource;
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(devices);
+
+        Link addDeviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).createDevice(null)).withRel("addDevice");
+        CollectionModel<EntityModel<DeviceDTO>> collectionModel = CollectionModel.of(devices, addDeviceLink);
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PostMapping

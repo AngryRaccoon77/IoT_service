@@ -6,6 +6,7 @@ import com.example.iotservice.dtos.HubDTO;
 import com.example.iotservice.services.HouseService;
 import com.example.iotservice.services.HubService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -42,6 +43,9 @@ public class HouseController {
         Link userLink = WebMvcLinkBuilder.linkTo(methodOn(UserController.class).getUserById(houseDTO.getUser().getId())).withRel("user");
         resource.add(userLink);
 
+        Link addHubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).createHub(null)).withRel("addHub");
+        resource.add(addHubLink);
+
         List<HubDTO> hubs = hubService.getHubsByHouseId(id);
         for(HubDTO hub : hubs) {
             Link hubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(hub.getId())).withRel("hub");
@@ -58,20 +62,20 @@ public class HouseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EntityModel<HouseDTO>>> getAllHouses() {
+    public ResponseEntity<CollectionModel<EntityModel<HouseDTO>>> getAllHouses() {
         List<EntityModel<HouseDTO>> houses = houseService.getAllHouses().stream()
                 .map(houseDTO -> {
                     EntityModel<HouseDTO> resource = EntityModel.of(houseDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(houseDTO.getId())).withSelfRel();
                     resource.add(selfLink);
-
-                    Link addHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).createHouse(null)).withRel("addHouse");
-                    resource.add(addHouseLink);
-
                     return resource;
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(houses);
+
+        Link addHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).createHouse(null)).withRel("addHouse");
+        CollectionModel<EntityModel<HouseDTO>> collectionModel = CollectionModel.of(houses, addHouseLink);
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PostMapping

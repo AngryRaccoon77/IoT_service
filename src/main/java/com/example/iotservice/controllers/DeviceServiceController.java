@@ -4,6 +4,7 @@ import com.example.iotservice.dtos.AddDeviceServiceDTO;
 import com.example.iotservice.dtos.DeviceServiceDTO;
 import com.example.iotservice.services.DeviceServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -46,20 +47,19 @@ public class DeviceServiceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EntityModel<DeviceServiceDTO>>> getAllDeviceServices() {
+    public ResponseEntity<CollectionModel<EntityModel<DeviceServiceDTO>>> getAllDeviceServices() {
         List<EntityModel<DeviceServiceDTO>> deviceServices = deviceServiceService.getAllDeviceServices().stream()
                 .map(deviceServiceDTO -> {
                     EntityModel<DeviceServiceDTO> resource = EntityModel.of(deviceServiceDTO);
                     Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(deviceServiceDTO.getId())).withSelfRel();
                     resource.add(selfLink);
-
-                    Link addDeviceServiceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).createDeviceService(null)).withRel("addDeviceService");
-                    resource.add(addDeviceServiceLink);
-
                     return resource;
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(deviceServices);
+
+        Link addDeviceServiceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).createDeviceService(null)).withRel("addDeviceService");
+        CollectionModel<EntityModel<DeviceServiceDTO>> collectionModel = CollectionModel.of(deviceServices, addDeviceServiceLink);
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PostMapping
