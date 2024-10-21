@@ -6,13 +6,16 @@ import com.example.iotservice.dtos.UserDTO;
 import com.example.iotservice.services.HouseService;
 import com.example.iotservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,11 +39,10 @@ public class UserController {
         UserDTO userDTO = userService.getUserById(id);
         EntityModel<UserDTO> resource = EntityModel.of(userDTO);
 
-        // Ссылка на самого пользователя
+
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(UserController.class).getUserById(id)).withSelfRel();
         resource.add(selfLink);
 
-        // Добавляем ссылки на дома пользователя
         List<HouseDTO> houses = houseService.getHousesByUserId(id);
         for (HouseDTO house : houses) {
             Link houseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(house.getId())).withRel("house");
@@ -51,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EntityModel<UserDTO>>> getAllUsers() {
+    public ResponseEntity<CollectionModel<EntityModel<UserDTO>>> getAllUsers() {
         List<EntityModel<UserDTO>> users = userService.getAllUsers().stream()
                 .map(userDTO -> {
                     EntityModel<UserDTO> resource = EntityModel.of(userDTO);
@@ -60,7 +62,20 @@ public class UserController {
                     return resource;
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(users);
+
+        Link addUserLink = WebMvcLinkBuilder.linkTo(methodOn(UserController.class).createUser(null)).withRel("addUser");
+
+        Map<String, Object> addUserAction = new HashMap<>();
+        addUserAction.put("href", addUserLink.getHref());
+        addUserAction.put("method", "POST");
+
+        Map<String, Map<String, Object>> actionMap = new HashMap<>();
+        actionMap.put("addUser", addUserAction);
+
+        CollectionModel<EntityModel<UserDTO>> collectionModel = CollectionModel.of(users);
+        collectionModel.add(Link.of(addUserLink.getHref(), "_action").withType("POST"));
+
+        return ResponseEntity.ok(collectionModel);
     }
 
     @PostMapping

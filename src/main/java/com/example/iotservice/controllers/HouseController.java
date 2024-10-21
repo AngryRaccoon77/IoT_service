@@ -13,8 +13,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,29 +33,40 @@ public class HouseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<HouseDTO>> getHouseById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<Map<String, Object>>> getHouseById(@PathVariable UUID id) {
         HouseDTO houseDTO = houseService.getHouseById(id);
-        EntityModel<HouseDTO> resource = EntityModel.of(houseDTO);
+        Map<String, Object> houseData = new HashMap<>();
+        houseData.put("id", houseDTO.getId());
+        houseData.put("name", houseDTO.getName());
+        houseData.put("address", houseDTO.getAddress());
+
+        Map<String, Object> linkMap = new HashMap<>();
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(id)).withSelfRel();
-        resource.add(selfLink);
+        linkMap.put("self", selfLink);
 
         Link userLink = WebMvcLinkBuilder.linkTo(methodOn(UserController.class).getUserById(houseDTO.getUser().getId())).withRel("user");
-        resource.add(userLink);
+        linkMap.put("user", userLink);
+        houseData.put("_links", linkMap);
 
+        Map<String, Link> actionMap = new HashMap<>();
         Link addHubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).createHub(null)).withRel("addHub");
-        resource.add(addHubLink);
+        actionMap.put("addHub", addHubLink);
 
         List<HubDTO> hubs = hubService.getHubsByHouseId(id);
+        List<Link> hubLinks = new ArrayList<>();
         for(HubDTO hub : hubs) {
             Link hubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(hub.getId())).withRel("hub");
-            resource.add(hubLink);
-
-            Link updateHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).updateHouse(hub.getId(), null)).withRel("updateHouse");
-            resource.add(updateHouseLink);
+            hubLinks.add(hubLink);
         }
+        linkMap.put("hub", hubLinks);
+        Link updateHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).updateHouse(houseDTO.getId(), null)).withRel("updateHouse");
+        actionMap.put("updateHouse", updateHouseLink);
 
-        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).deleteHouse(id)).withRel("delete");
-        resource.add(deleteLink);
+        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).deleteHouse(id)).withRel("deleteHouse");
+        actionMap.put("delete", deleteLink);
+        houseData.put("_action", actionMap);
+
+        EntityModel<Map<String, Object>> resource = EntityModel.of(houseData);
 
         return ResponseEntity.ok(resource);
     }
@@ -73,7 +83,16 @@ public class HouseController {
                 .collect(Collectors.toList());
 
         Link addHouseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).createHouse(null)).withRel("addHouse");
-        CollectionModel<EntityModel<HouseDTO>> collectionModel = CollectionModel.of(houses, addHouseLink);
+
+        Map<String, Object> addHouseAction = new HashMap<>();
+        addHouseAction.put("href", addHouseLink.getHref());
+        addHouseAction.put("method", "POST");
+
+        Map<String, Map<String, Object>> actionMap = new HashMap<>();
+        actionMap.put("addHouse", addHouseAction);
+
+        CollectionModel<EntityModel<HouseDTO>> collectionModel = CollectionModel.of(houses);
+        collectionModel.add(Link.of(addHouseLink.getHref(), "_action").withType("POST"));
 
         return ResponseEntity.ok(collectionModel);
     }

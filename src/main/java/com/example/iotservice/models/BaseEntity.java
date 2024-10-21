@@ -14,7 +14,7 @@ public abstract class BaseEntity {
     protected Date created;
     protected Date modified;
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     public UUID getId(){
         return id;

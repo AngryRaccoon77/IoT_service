@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface DeviceRepository extends JpaRepository<Device, UUID> {
     Device findByName(String name);
-    List<Device> findByControllerId(UUID controllerId);
+    List<Device> findByHubId(UUID controllerId);
 
 }

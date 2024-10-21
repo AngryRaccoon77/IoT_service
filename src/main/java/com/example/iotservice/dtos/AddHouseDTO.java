@@ -11,7 +11,7 @@ public class AddHouseDTO {
     private String name;
     private String address;
 
-    private User user;
+    private UserDTO user;
 
     private Set<Hub> hubs;
 
@@ -26,11 +26,11 @@ public class AddHouseDTO {
         this.address = address;
     }
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
 

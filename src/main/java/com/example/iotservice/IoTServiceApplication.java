@@ -23,31 +23,31 @@ public class IoTServiceApplication {
 			AddUserDTO user1 = new AddUserDTO();
 			user1.setName("John Doe");
 			user1.setEmail("john.doe@example.com");
-			User savedUser = modelMapper().map(userService.createUser(user1), User.class);
+			UserDTO savedUser = userService.createUser(user1);
 
 			AddHouseDTO house1 = new AddHouseDTO();
 			house1.setName("My home");
 			house1.setAddress("123 Oak St");
 			house1.setUser(savedUser);
-			House savedHouse1 = modelMapper().map(houseService.createHouse(house1), House.class);
+			HouseDTO savedHouse1 = houseService.createHouse(house1);
 
 			AddHouseDTO house2 = new AddHouseDTO();
 			house2.setAddress("456 Maple St");
 			house2.setName("Parent's home");
 			house2.setUser(savedUser);
-			House savedHouse2 = modelMapper().map(houseService.createHouse(house2), House.class);
+			HouseDTO savedHouse2 = houseService.createHouse(house2);
 
 			AddHubDTO hub1 = new AddHubDTO();
 			hub1.setName("Zigbee Hub");
 			hub1.setType(ControllerType.ZIGBEE);
-			hub1.setStatus("Online");
+			hub1.setStatus(true);
 			hub1.setHouse(savedHouse1);
 			HubDTO savedHub1 = hubService.createHub(hub1);
 
 			AddHubDTO hub2 = new AddHubDTO();
 			hub2.setName("Thread Hub");
 			hub2.setType(ControllerType.THREAD);
-			hub2.setStatus("Offline");
+			hub2.setStatus(false);
 			hub2.setHouse(savedHouse2);
 			HubDTO savedHub2 = hubService.createHub(hub2);
 
@@ -108,6 +108,7 @@ public class IoTServiceApplication {
 
 		return modelMapper;
 	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(IoTServiceApplication.class, args);
 	}

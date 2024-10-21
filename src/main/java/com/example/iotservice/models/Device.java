@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "divices")
+@Table(name = "devices")
 public class Device extends BaseEntity{
     private boolean status;
 
@@ -31,13 +31,13 @@ public class Device extends BaseEntity{
         this.status = status;
     }
     @ManyToOne(optional = false)
-    @JoinColumn(name = "controller_id", referencedColumnName = "id", nullable = false)
-    public Hub getController(){
+    @JoinColumn(name = "hub_id", referencedColumnName = "id", nullable = false)
+    public Hub getHub(){
         return hub;
     }
 
-    public void setController(Hub controller){
-        this.hub = controller;
+    public void setHub(Hub hub){
+        this.hub = hub;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "device", cascade = CascadeType.ALL)

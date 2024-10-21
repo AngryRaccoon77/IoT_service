@@ -10,6 +10,8 @@ import com.example.iotservice.repositories.HubRepository;
 import com.example.iotservice.repositories.DeviceRepository;
 import com.example.iotservice.services.HubService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ public class HubServiceImpl implements HubService {
     private HubRepository hubRepository;
     private DeviceRepository deviceRepository;
     private ModelMapper modelMapper;
+    private static final Logger logger = LoggerFactory.getLogger(HubServiceImpl.class);
+
 
     @Autowired
     public void setControllerRepository(HubRepository hubRepository) {
@@ -62,11 +66,19 @@ public class HubServiceImpl implements HubService {
 
     @Override
     public HubDTO updateHub(UUID id, HubDTO hubDTO) {
-        Hub controller = hubRepository.findById(id).orElseThrow(() -> new RuntimeException("Controller not found"));
-        modelMapper.map(hubDTO, controller);
-        controller.setModified(new Date());
-        return modelMapper.map(hubRepository.save(controller), HubDTO.class);
+        Hub hub = hubRepository.findById(id).orElseThrow(() -> new RuntimeException("Hub not found"));
+
+        logger.info("Hub before update: {}", hub);
+
+        // Маппинг DTO на сущность
+        modelMapper.map(hubDTO, hub);
+
+        logger.info("Hub after update: {}", hub);
+
+        hub.setModified(new Date());
+        return modelMapper.map(hubRepository.save(hub), HubDTO.class);
     }
+
 
     @Override
     public void deleteHub(UUID id) {
@@ -75,7 +87,7 @@ public class HubServiceImpl implements HubService {
 
     @Override
     public List<DeviceDTO> getDevicesByHubId(UUID hubId) {
-        List<Device> devices = deviceRepository.findByControllerId(hubId);
+        List<Device> devices = deviceRepository.findByHubId(hubId);
         return devices.stream()
                 .map(device -> modelMapper.map(device, DeviceDTO.class))
                 .collect(Collectors.toList());

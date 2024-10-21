@@ -13,8 +13,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,29 +30,51 @@ public class HubController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<HubDTO>> getHubById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<Map<String, Object>>> getHubById(@PathVariable UUID id) {
         HubDTO hubDTO = hubService.getHubById(id);
-        EntityModel<HubDTO> resource = EntityModel.of(hubDTO);
+        Map<String, Object> hubData = new HashMap<>();
+        hubData.put("id", hubDTO.getId());
+        hubData.put("name", hubDTO.getName());
+        hubData.put("type", hubDTO.getType());
+
+        Map<String, Object> linkMap = new HashMap<>();
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).getHubById(id)).withSelfRel();
-        resource.add(selfLink);
+        linkMap.put("self", selfLink);
 
         Link houseLink = WebMvcLinkBuilder.linkTo(methodOn(HouseController.class).getHouseById(hubDTO.getHouse().getId())).withRel("house");
-        resource.add(houseLink);
+        linkMap.put("house", houseLink);
+        hubData.put("_links", linkMap);
 
+        Map<String, Map<String, Object>> actionMap = new HashMap<>();
+        Map<String, Object> addDeviceAction = new HashMap<>();
         Link addDeviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).createDevice(null)).withRel("addDevice");
-        resource.add(addDeviceLink);
+        addDeviceAction.put("href", addDeviceLink.getHref());
+        addDeviceAction.put("method", "POST");
+        actionMap.put("addDevice", addDeviceAction);
 
         List<DeviceDTO> devices = hubService.getDevicesByHubId(id);
-        for(DeviceDTO device : devices) {
+        List<Link> deviceLinks = new ArrayList<>();
+        for (DeviceDTO device : devices) {
             Link deviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(device.getId())).withRel("device");
-            resource.add(deviceLink);
+            deviceLinks.add(deviceLink);
         }
+        linkMap.put("devices", deviceLinks);
 
-        Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).updateHub(id, hubDTO)).withRel("update");
-        resource.add(updateLink);
+        Map<String, Object> updateAction = new HashMap<>();
+        Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).updateHub(id, hubDTO)).withRel("updateHub");
+        updateAction.put("href", updateLink.getHref());
+        updateAction.put("method", "PUT");
+        actionMap.put("update", updateAction);
 
-        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).deleteHub(id)).withRel("delete");
-        resource.add(deleteLink);
+        Map<String, Object> deleteAction = new HashMap<>();
+        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).deleteHub(id)).withRel("deleteHub");
+        deleteAction.put("href", deleteLink.getHref());
+        deleteAction.put("method", "DELETE");
+        actionMap.put("delete", deleteAction);
+
+        hubData.put("_action", actionMap);
+
+        EntityModel<Map<String, Object>> resource = EntityModel.of(hubData);
 
         return ResponseEntity.ok(resource);
     }
@@ -70,7 +91,17 @@ public class HubController {
                 .collect(Collectors.toList());
 
         Link addHubLink = WebMvcLinkBuilder.linkTo(methodOn(HubController.class).createHub(null)).withRel("addHub");
-        CollectionModel<EntityModel<HubDTO>> collectionModel = CollectionModel.of(hubs, addHubLink);
+
+        Map<String, Object> addHubAction = new HashMap<>();
+        addHubAction.put("href", addHubLink.getHref());
+        addHubAction.put("method", "POST");
+
+        Map<String, Map<String, Object>> actionMap = new HashMap<>();
+        actionMap.put("addHub", addHubAction);
+
+        CollectionModel<EntityModel<HubDTO>> collectionModel = CollectionModel.of(hubs);
+        collectionModel.add(Link.of(addHubLink.getHref(), "_action").withType("POST"));
+
         return ResponseEntity.ok(collectionModel);
     }
 
@@ -83,7 +114,7 @@ public class HubController {
         return ResponseEntity.created(selfLink.toUri()).body(resource);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<EntityModel<HubDTO>> updateHub(@PathVariable UUID id, @RequestBody HubDTO hubDTO) {
         HubDTO updatedHub = hubService.updateHub(id, hubDTO);
         EntityModel<HubDTO> resource = EntityModel.of(updatedHub);

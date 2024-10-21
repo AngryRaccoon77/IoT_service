@@ -3,6 +3,7 @@ package com.example.iotservice.dtos;
 import com.example.iotservice.models.Hub;
 import com.example.iotservice.models.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.Set;
@@ -12,7 +13,11 @@ public class HouseDTO {
     private UUID id;
     private String name;
     private String address;
-    @JsonBackReference
+
+    @JsonIgnore
+    private Set<HubDTO> hubs;
+
+    @JsonBackReference // House belongs to a user
     private UserDTO user;
 
     // Getters and Setters
@@ -47,6 +52,14 @@ public class HouseDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void getHubs(Set<HubDTO> hubs) {
+        this.hubs = hubs;
+    }
+
+    public Set<HubDTO> setHubs() {
+        return hubs;
     }
 
 }

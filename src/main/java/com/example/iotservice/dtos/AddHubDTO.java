@@ -8,9 +8,9 @@ import java.util.UUID;
 public class AddHubDTO {
     private String name;
     private ControllerType type;
-    private String status;
+    private Boolean status;
 
-    private House house;
+    private HouseDTO house;
 
     // Getters and Setters
 
@@ -30,14 +30,19 @@ public class AddHubDTO {
         this.type = type;
     }
 
-    public House getHouse() {
+    public HouseDTO getHouse() {
         return house;
     }
 
-    public void setHouse(House house) {
+    public void setHouse(HouseDTO house) {
         this.house = house;
     }
 
-    public void setStatus(String online) {
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public Boolean getStatus() {
+        return status;
     }
 }

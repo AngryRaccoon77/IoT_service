@@ -1,16 +1,23 @@
 package com.example.iotservice.dtos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class HubDTO {
     private UUID id;
     private String name;
     private String type;
-    @JsonBackReference
+    private Boolean status;
+
+    @JsonBackReference // Hub belongs to a house
     private HouseDTO house;
 
+    @JsonIgnore// Hub manages devices
+    private Set<DeviceDTO> devices;
     // Getters and Setters
     public UUID getId() {
         return id;
@@ -42,5 +49,21 @@ public class HubDTO {
 
     public void setHouse(HouseDTO house) {
         this.house = house;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public Set<DeviceDTO>  getDevices() {
+        return devices;
+    }
+
+    public void setDevices(Set<DeviceDTO> devices) {
+        this.devices = devices;
     }
 }

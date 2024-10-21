@@ -9,6 +9,7 @@ public class AddDeviceDTO {
 
     private String room;
     private HubDTO hub;
+
     // Getters and Setters
 
     public String getName() {

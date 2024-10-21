@@ -1,0 +1,67 @@
+type Hub {
+    id: ID!
+    type: ControllerType!
+    status: Boolean!
+    house: House!
+    devices: [Device!]
+}
+
+enum ControllerType {
+    ZIGBEE
+    THREAD
+    OTHER
+}
+
+type House {
+    id: ID!
+    address: String!
+    user: User!
+    hubs: [Hub!]!
+}
+
+type Device {
+    id: ID!
+    name: String!
+    status: Boolean!
+    hub: Hub!
+    services: [DeviceService!]
+}
+
+type DeviceService {
+    id: ID!
+    name: String!
+    type: ServiceType!
+    device: Device
+}
+
+enum ServiceType {
+    HUMIDITY
+    TEMPERATURE
+    WATERLEAK
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    houses: [House!]!
+}
+
+type Query {
+    hubs: [Hub!]!
+    hub(id: ID!): Hub
+    houses: [House!]!
+    house(id: ID!): House
+    devices: [Device!]!
+    device(id: ID!): Device
+    hello: String!
+}
+
+type Mutation {
+    addHouse(address: String!, userID: ID!): House!
+    deleteHouse(id: ID!): Boolean!
+    addHub(name: String!, type: ControllerType!, status: Boolean!, houseId: ID!): Hub!
+    deleteHub(id: ID!): Boolean!
+    addDevice(name: String!, status: Boolean!, hubId: ID!): Device!
+    deleteDevice(id: ID!): Boolean!
+}

@@ -8,6 +8,7 @@ public class DeviceDTO {
     private UUID id;
     private String name;
 
+    private boolean status;
     @JsonBackReference
     private HubDTO hub;
     // Getters and Setters
@@ -34,5 +35,13 @@ public class DeviceDTO {
 
     public void setHub(HubDTO hub) {
         this.hub = hub;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public boolean getStatus() {
+        return status;
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,20 +31,36 @@ public class DeviceServiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<DeviceServiceDTO>> getDeviceServiceById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<Map<String, Object>>> getDeviceServiceById(@PathVariable UUID id) {
         DeviceServiceDTO deviceServiceDTO = deviceServiceService.getDeviceServiceById(id);
-        EntityModel<DeviceServiceDTO> resource = EntityModel.of(deviceServiceDTO);
+        Map<String, Object> deviceServiceData = new HashMap<>();
+        deviceServiceData.put("id", deviceServiceDTO.getId());
+        deviceServiceData.put("name", deviceServiceDTO.getName());
+        deviceServiceData.put("type", deviceServiceDTO.getType());
+
+        Map<String, Link> linkMap = new HashMap<>();
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).getDeviceServiceById(id)).withSelfRel();
-        resource.add(selfLink);
-
-        Link deleteLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).deleteDeviceService(id)).withRel("delete");
-        resource.add(deleteLink);
-
-        Link updateLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).updateDeviceService(id, deviceServiceDTO)).withRel("update");
-        resource.add(updateLink);
+        linkMap.put("self", selfLink);
 
         Link deviceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(deviceServiceDTO.getDevice().getId())).withRel("device");
-        resource.add(deviceLink);
+        linkMap.put("device", deviceLink);
+        deviceServiceData.put("_links", linkMap);
+
+        Map<String, Map<String, Object>> actionMap = new HashMap<>();
+        Map<String, Object> updateAction = new HashMap<>();
+        updateAction.put("href", WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).updateDeviceService(id, deviceServiceDTO)).withRel("updateDeviceService").getHref());
+        updateAction.put("method", "PUT");
+        actionMap.put("update", updateAction);
+
+        Map<String, Object> deleteAction = new HashMap<>();
+        deleteAction.put("href", WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).deleteDeviceService(id)).withRel("deleteDeviceService").getHref());
+        deleteAction.put("method", "DELETE");
+        actionMap.put("delete", deleteAction);
+
+        deviceServiceData.put("_action", actionMap);
+
+        EntityModel<Map<String, Object>> resource = EntityModel.of(deviceServiceData);
+
         return ResponseEntity.ok(resource);
     }
 
@@ -58,7 +76,12 @@ public class DeviceServiceController {
                 .collect(Collectors.toList());
 
         Link addDeviceServiceLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceServiceController.class).createDeviceService(null)).withRel("addDeviceService");
-        CollectionModel<EntityModel<DeviceServiceDTO>> collectionModel = CollectionModel.of(deviceServices, addDeviceServiceLink);
+        Map<String, Object> addDeviceServiceAction = new HashMap<>();
+        addDeviceServiceAction.put("href", addDeviceServiceLink.getHref());
+        addDeviceServiceAction.put("method", "POST");
+
+        CollectionModel<EntityModel<DeviceServiceDTO>> collectionModel = CollectionModel.of(deviceServices);
+        collectionModel.add(Link.of(addDeviceServiceLink.getHref(), "_action").withType("POST"));
         return ResponseEntity.ok(collectionModel);
     }
 
