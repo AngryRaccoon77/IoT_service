@@ -2,33 +2,31 @@ package com.example.iotservice.dtos;
 
 import java.util.UUID;
 
-public class UserDTO {
+public class UpdateDeviceDTO {
     private UUID id;
     private String name;
-    private String email;
-
+    private boolean status;
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
+    }
+    public boolean getStatus(){
+        return status;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

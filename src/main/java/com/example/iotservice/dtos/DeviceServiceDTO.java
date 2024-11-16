@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.UUID;
 
 public class DeviceServiceDTO {
-    private UUID id;
-    private String name;
-    private String type;
-    @JsonBackReference
-    private DeviceDTO device;
+        private UUID id;
+        private String name;
+        private String type;
+        @JsonBackReference
+        private DeviceDTO device;
 
     // Getters and Setters
     public UUID getId() {

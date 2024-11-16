@@ -3,6 +3,7 @@ package com.example.iotservice.services.impl;
 import com.example.iotservice.dtos.AddDeviceDTO;
 import com.example.iotservice.dtos.DeviceDTO;
 import com.example.iotservice.dtos.DeviceServiceDTO;
+import com.example.iotservice.dtos.UpdateDeviceDTO;
 import com.example.iotservice.models.Device;
 import com.example.iotservice.repositories.DeviceRepository;
 import com.example.iotservice.services.DeviceService;
@@ -59,15 +60,19 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public DeviceDTO updateDevice(UUID id, DeviceDTO deviceDTO) {
-        Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
+    public DeviceDTO updateDevice(UUID id, UpdateDeviceDTO deviceDTO) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Device not found"));
         boolean oldStatus = device.getStatus();
-        modelMapper.map(deviceDTO, device);
+        device.setName(deviceDTO.getName());
+        device.setStatus(deviceDTO.getStatus());
         device.setModified(new Date());
-        DeviceDTO updatedDevice = modelMapper.map(deviceRepository.save(device), DeviceDTO.class);
-        String message = "Device: " + device.getId() +  "  status changed from " + oldStatus + " to " + updatedDevice.getStatus();
-        if (!oldStatus==updatedDevice.getStatus()) {
-            rabbitTemplate.convertAndSend("deviceStatusExchange", "device.status",  message);
+        Device savedDevice = deviceRepository.save(device);
+        DeviceDTO updatedDevice = modelMapper.map(savedDevice, DeviceDTO.class);
+        if (oldStatus != updatedDevice.getStatus()) {
+            String message = String.format("Device: %s status changed from %s to %s",
+                    device.getId(), oldStatus, updatedDevice.getStatus());
+            rabbitTemplate.convertAndSend("deviceStatusExchange", "device.status", message);
         }
 
         return updatedDevice;

@@ -3,6 +3,7 @@ package com.example.iotservice.controllers;
 import com.example.iotservice.dtos.AddDeviceDTO;
 import com.example.iotservice.dtos.DeviceDTO;
 import com.example.iotservice.dtos.DeviceServiceDTO;
+import com.example.iotservice.dtos.UpdateDeviceDTO;
 import com.example.iotservice.services.DeviceService;
 import com.example.iotservice.services.DeviceServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class DeviceController {
         actionMap.put("addService", addServiceAction);
 
         Map<String, Object> updateAction = new HashMap<>();
-        updateAction.put("href", WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).updateDevice(id, deviceDTO)).withRel("updateDevice").getHref());
+        updateAction.put("href", WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).updateDevice(id, null)).withRel("updateDevice").getHref());
         updateAction.put("method", "PUT");
         actionMap.put("update", updateAction);
 
@@ -115,7 +116,7 @@ public class DeviceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<DeviceDTO>> updateDevice(@PathVariable UUID id, @RequestBody DeviceDTO deviceDTO) {
+    public ResponseEntity<EntityModel<DeviceDTO>> updateDevice(@PathVariable UUID id, @RequestBody UpdateDeviceDTO deviceDTO) {
         DeviceDTO updatedDevice = deviceService.updateDevice(id, deviceDTO);
         EntityModel<DeviceDTO> resource = EntityModel.of(updatedDevice);
         Link selfLink = WebMvcLinkBuilder.linkTo(methodOn(DeviceController.class).getDeviceById(id)).withSelfRel();
