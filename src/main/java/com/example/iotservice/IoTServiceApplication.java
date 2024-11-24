@@ -80,21 +80,24 @@ public class IoTServiceApplication {
 			DeviceDTO savedDevice4 = deviceService.createDevice(device4);
 
 			AddDeviceServiceDTO service1 = new AddDeviceServiceDTO();
-			service1.setName("Service 1");
+			service1.setName("Humidity Living Room");
 			service1.setDevice(savedDevice1);
 			service1.setType(ServiceType.HUMIDITY);
+			service1.setData("{humidity: 50, battery: 90, rsi: -50}");
 			deviceServiceService.createDeviceService(service1);
 
 			AddDeviceServiceDTO service2 = new AddDeviceServiceDTO();
-			service2.setName("Service 2");
+			service2.setName("Temperature Living Room");
 			service2.setDevice(savedDevice1);
 			service2.setType(ServiceType.TEMPERATURE);
+			service2.setData("{temperature: 20, battery: 90, rsi: -50}");
 			deviceServiceService.createDeviceService(service2);
 
 			AddDeviceServiceDTO service3 = new AddDeviceServiceDTO();
 			service3.setName("Service 3");
 			service3.setType(ServiceType.WATERLEAK);
 			service3.setDevice(savedDevice2);
+			service3.setData("{waterleak: false, battery: 90, rsi: -50}");
 			deviceServiceService.createDeviceService(service3);
 		};
 	}

@@ -69,11 +69,7 @@ public class DeviceServiceImpl implements DeviceService {
         device.setModified(new Date());
         Device savedDevice = deviceRepository.save(device);
         DeviceDTO updatedDevice = modelMapper.map(savedDevice, DeviceDTO.class);
-        if (oldStatus != updatedDevice.getStatus()) {
-            String message = String.format("Device: %s status changed from %s to %s",
-                    device.getId(), oldStatus, updatedDevice.getStatus());
-            rabbitTemplate.convertAndSend("deviceStatusExchange", "device.status", message);
-        }
+        rabbitTemplate.convertAndSend("deviceStatusExchange", "device.status", updatedDevice.toString());
 
         return updatedDevice;
     }
