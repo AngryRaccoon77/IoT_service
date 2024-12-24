@@ -2,19 +2,14 @@ package com.example.iotservice.dtos;
 
 import com.example.iotservice.models.enums.ServiceType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.UUID;
 
-public class DeviceServiceDTO {
-        private UUID id;
-        private String name;
-        private ServiceType type;
-
-        @JsonIgnore
-        private DeviceDTO device;
-
-        private String data;
+public class UpdateDeviceServiceDTO {
+    private UUID id;
+    private String name;
+    private ServiceType type;
+    private String data;
 
     // Getters and Setters
     public UUID getId() {
@@ -41,13 +36,7 @@ public class DeviceServiceDTO {
         this.type = type;
     }
 
-    public DeviceDTO getDevice() {
-        return device;
-    }
 
-    public void setDevice(DeviceDTO device) {
-        this.device = device;
-    }
 
     public String getData() {
         return data;
@@ -57,13 +46,5 @@ public class DeviceServiceDTO {
         this.data = data;
     }
 
-    @Override
-    public String toString() {
-        return "DeviceService{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", data='" + data + '\'' +
-                '}';
-    }
+
 }

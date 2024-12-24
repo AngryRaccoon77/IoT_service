@@ -1,12 +1,12 @@
 package com.example.iotservice.services.impl;
 
-import com.example.iotservice.dtos.AddDeviceServiceDTO;
-import com.example.iotservice.dtos.DeviceServiceDTO;
-import com.example.iotservice.dtos.HubDTO;
+import com.example.iotservice.dtos.*;
+import com.example.iotservice.models.Device;
 import com.example.iotservice.models.DeviceService;
 import com.example.iotservice.repositories.DeviceServiceRepository;
 import com.example.iotservice.services.DeviceServiceService;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,7 @@ public class DeviceServiceServiceImpl implements DeviceServiceService {
 
     private DeviceServiceRepository serviceRepository;
     private ModelMapper modelMapper;
+    private RabbitTemplate rabbitTemplate;
 
     @Autowired
     public void setServiceRepository(DeviceServiceRepository serviceRepository) {
@@ -29,6 +30,12 @@ public class DeviceServiceServiceImpl implements DeviceServiceService {
     @Autowired
     public void setModelMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
+    }
+
+
+    @Autowired
+    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -52,12 +59,20 @@ public class DeviceServiceServiceImpl implements DeviceServiceService {
     }
 
     @Override
-    public DeviceServiceDTO updateDeviceService(UUID id, DeviceServiceDTO serviceDTO) {
-        DeviceService service = serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Service not found"));
-        modelMapper.map(serviceDTO, service);
+    public DeviceServiceDTO updateDeviceService(UUID id, UpdateDeviceServiceDTO serviceDTO) {
+        DeviceService service = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        service.setName(serviceDTO.getName());
+        service.setType(serviceDTO.getType());
+        service.setData(serviceDTO.getData());
         service.setModified(new Date());
-        return modelMapper.map(serviceRepository.save(service), DeviceServiceDTO.class);
+        DeviceService savedService = serviceRepository.save(service);
+        DeviceDTO updatedDevice = modelMapper.map(service.getDevice(), DeviceDTO.class);
+        rabbitTemplate.convertAndSend("deviceStatusExchange", "device.status", updatedDevice.toString());
+        return modelMapper.map(savedService, DeviceServiceDTO.class);
     }
+
 
     @Override
     public void deleteDeviceService(UUID id) {

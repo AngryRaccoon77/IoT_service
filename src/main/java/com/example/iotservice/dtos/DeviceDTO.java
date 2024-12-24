@@ -9,7 +9,6 @@ import java.util.UUID;
 public class DeviceDTO {
     private UUID id;
     private String name;
-
     private boolean status;
     @JsonBackReference
     private HubDTO hub;

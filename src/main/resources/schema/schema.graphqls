@@ -32,6 +32,7 @@ type DeviceService {
     name: String!
     type: ServiceType!
     device: Device
+    data: String
 }
 
 enum ServiceType {
